@@ -5,11 +5,13 @@ unless ARGV.any? {|a| a =~ /^gems/}
 begin
   require 'cucumber/rake/task'
 
-  Cucumber::Rake::Task.new(:features) do |t|
-    t.fork = true
-    t.cucumber_opts = [<%= options[:spork] ? "'--drb', " : "" %>'--format', (ENV['CUCUMBER_FORMAT'] || 'pretty')]
+  if defined? Cucumber
+    Cucumber::Rake::Task.new(:features) do |t|
+      t.fork = true
+      t.cucumber_opts = [<%= options[:spork] ? "'--drb', " : "" %>'--format', (ENV['CUCUMBER_FORMAT'] || 'pretty')]
+    end
+    task :features => 'db:test:prepare'
   end
-  task :features => 'db:test:prepare'
 rescue LoadError
   desc 'Cucumber rake task not available'
   task :features do
